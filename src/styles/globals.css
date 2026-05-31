@@ -257,27 +257,6 @@
     }
     }
 
-    /* ─── Reduced Motion ───────────────────────────────────────────────────── */
-    @media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-        scroll-behavior: auto !important;
-    }
-    }
-
-    /* ─── Form Input Focus ──────────────────────────────────────────────────── */
-    input:focus-visible,
-    textarea:focus-visible,
-    select:focus-visible {
-    outline: none;
-    border-color: rgba(201, 151, 44, 0.55) !important;
-    box-shadow: 0 0 0 2px rgba(201, 151, 44, 0.15);
-    }
-
     /* ─── Utility Layer ─────────────────────────────────────────────────────── */
     @layer utilities {
     /* Opacity-delayed animation utilities */
@@ -296,4 +275,19 @@
 
     /* GPU compositing hint — use sparingly on animated elements */
     .will-transform { will-change: transform; }
+    }
+
+    /* ── Mobile global fixes ── */
+    @media (max-width: 640px) {
+    /* Prevent any section from overflowing horizontally */
+    section, main, footer, header, nav {
+        max-width: 100vw;
+        overflow-x: hidden;
+    }
+
+    /* Tighten section padding on mobile */
+    section {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
     }
