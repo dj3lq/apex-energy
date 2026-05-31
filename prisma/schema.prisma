@@ -1,0 +1,93 @@
+// Apex Energy — Prisma Schema
+//
+// Database: PostgreSQL
+// ORM:      Prisma
+//
+// Commands:
+//   npx prisma generate        — regenerate the Prisma client after schema changes
+//   npx prisma migrate dev     — create and apply a new migration (development)
+//   npx prisma migrate deploy  — apply pending migrations (production/CI)
+//   npx prisma studio          — open Prisma Studio GUI
+//
+// Security principles:
+//   - All timestamps are server-generated (not client-provided)
+//   - Soft deletes via deletedAt where data retention is needed
+//   - No plaintext passwords — Clerk handles all authentication
+//   - UUIDs as primary keys — prevents enumeration attacks
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  // directUrl is used by Prisma Migrate to bypass connection poolers (e.g. PgBouncer)
+  directUrl = env("DIRECT_URL")
+}
+
+// ─── Contact Submissions ──────────────────────────────────────────────────────
+//
+// Stores contact form submissions.
+// All fields are validated server-side before insertion.
+// Never store raw user input without sanitisation.
+
+model ContactSubmission {
+  id        String   @id @default(cuid())
+  name      String   @db.VarChar(100)
+  email     String   @db.VarChar(254)  // RFC 5321 max email length
+  company   String?  @db.VarChar(100)
+  phone     String?  @db.VarChar(30)
+  subject   String   @db.VarChar(200)
+  message   String   @db.Text
+  // Status for internal tracking
+  status    ContactStatus @default(PENDING)
+  // IP address — hashed for privacy compliance
+  ipHash    String?  @db.VarChar(64)
+  // Timestamps — always server-generated
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email])
+  @@index([status])
+  @@index([createdAt])
+  @@map("contact_submissions")
+}
+
+enum ContactStatus {
+  PENDING
+  READ
+  REPLIED
+  ARCHIVED
+}
+
+// ─── Audit Log ────────────────────────────────────────────────────────────────
+//
+// Immutable record of significant system events.
+// Used for compliance, debugging, and security monitoring.
+// Never delete audit log records.
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  // Who performed the action — Clerk user ID or 'system'
+  actorId    String   @db.VarChar(100)
+  actorEmail String?  @db.VarChar(254)
+  // What happened
+  action     String   @db.VarChar(100)
+  // What resource was affected
+  resource   String   @db.VarChar(100)
+  resourceId String?  @db.VarChar(100)
+  // Additional context — stored as JSON
+  metadata   Json?
+  // Request context — hashed IP for privacy
+  ipHash     String?  @db.VarChar(64)
+  userAgent  String?  @db.VarChar(500)
+  // Timestamps
+  createdAt  DateTime @default(now())
+
+  @@index([actorId])
+  @@index([action])
+  @@index([resource, resourceId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}

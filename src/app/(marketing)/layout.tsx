@@ -1,0 +1,22 @@
+    import Navbar from '@/components/layout/Navbar'
+    import Footer from '@/components/layout/Footer'
+
+    /**
+     * Shared layout for all (marketing) pages.
+     * Wraps content with Navbar + Footer.
+     */
+    export default function MarketingLayout({
+    children,
+    }: {
+    children: React.ReactNode
+    }) {
+    return (
+        <>
+        <Navbar />
+        <main id="main-content" tabIndex={-1}>
+            {children}
+        </main>
+        <Footer />
+        </>
+    )
+    }

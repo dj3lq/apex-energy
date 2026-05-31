@@ -1,0 +1,299 @@
+    /**
+    * Apex Energy — Global Styles
+    *
+    * Import order:
+    * 1. @import rules (must come first — CSS spec requirement)
+    * 2. Tailwind directives
+    * 3. CSS custom properties (design tokens)
+    * 4. Base resets and typography
+    * 5. Utility classes not expressible in Tailwind config
+    */
+
+    /* ─── Google Fonts ─────────────────────────────────────────────────────────
+    @import MUST precede all other rules (CSS spec).
+    Cormorant Garamond — display/heading font (premium, editorial)
+    Outfit             — body/UI font (modern, geometric, technical)
+    JetBrains Mono     — monospace for data and metrics
+    -------------------------------------------------------------------------- */
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+    @tailwind base;
+    @tailwind components;
+    @tailwind utilities;
+
+    /* ─── CSS Custom Properties ────────────────────────────────────────────────
+    Font variables consumed by tailwind.config.ts fontFamily declarations
+    -------------------------------------------------------------------------- */
+    :root {
+    /* Fonts */
+    --font-display: 'Cormorant Garamond', Georgia, serif;
+    --font-body:    'Outfit', system-ui, sans-serif;
+    --font-mono:    'JetBrains Mono', Consolas, monospace;
+
+    /* Brand colors as CSS variables — use these in arbitrary Tailwind values */
+    --color-gold:         #C9972C;
+    --color-gold-light:   #D4A843;
+    --color-gold-dark:    #B8860B;
+    --color-gold-shine:   #E8C44A;
+    --color-black:        #0A0A0A;
+    --color-surface:      #111111;
+    --color-surface-2:    #181818;
+    --color-surface-3:    #1F1F1F;
+    --color-border:       rgba(201, 151, 44, 0.12);
+    --color-border-hover: rgba(201, 151, 44, 0.3);
+    --color-text-primary: #F5F0E8;
+    --color-text-muted:   #888888;
+    --color-text-subtle:  #555555;
+
+    /* Sizing */
+    --navbar-height: 72px;
+    --container-px:  clamp(1.25rem, 5vw, 3rem);
+    }
+
+    /* ─── Base Layer ────────────────────────────────────────────────────────── */
+    @layer base {
+    *,
+    *::before,
+    *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    html {
+        font-size: 16px;
+        scroll-behavior: smooth;
+        /* Prevent font size inflation on mobile */
+        -webkit-text-size-adjust: 100%;
+        text-size-adjust: 100%;
+    }
+
+    body {
+        font-family: var(--font-body);
+        font-weight: 400;
+        background-color: #0A0A0A;
+        color: #F5F0E8;
+        line-height: 1.7;
+        /* Improve text rendering */
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+        /* Prevent horizontal scroll */
+        overflow-x: hidden;
+    }
+
+    /* Heading defaults — use display font */
+    h1, h2, h3, h4, h5, h6 {
+        font-family: var(--font-display);
+        font-weight: 600;
+        line-height: 1.1;
+        color: #F5F0E8;
+    }
+
+    /* Focus ring — accessible, brand-colored */
+    :focus-visible {
+        outline: 2px solid var(--color-gold);
+        outline-offset: 3px;
+        border-radius: 2px;
+    }
+
+    /* Remove focus ring for mouse users */
+    :focus:not(:focus-visible) {
+        outline: none;
+    }
+
+    /* Links */
+    a {
+        color: inherit;
+        text-decoration: none;
+        transition: color 250ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Images */
+    img, video {
+        display: block;
+        max-width: 100%;
+        height: auto;
+    }
+
+    /* Buttons reset */
+    button {
+        font-family: var(--font-body);
+        cursor: pointer;
+        border: none;
+        background: none;
+    }
+
+    /* Lists reset */
+    ul, ol {
+        list-style: none;
+    }
+
+    /* Selection color */
+    ::selection {
+        background-color: rgba(201, 151, 44, 0.25);
+        color: #F5F0E8;
+    }
+
+    /* Scrollbar — custom dark + gold */
+    ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+        background: #111111;
+    }
+    ::-webkit-scrollbar-thumb {
+        background: #2A2A2A;
+        border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        background: var(--color-gold-dark);
+    }
+    }
+
+    /* ─── Component Layer ───────────────────────────────────────────────────── */
+    @layer components {
+    /* Container — consistent max-width and padding */
+    .container-site {
+        width: 100%;
+        max-width: 1200px;
+        margin-inline: auto;
+        padding-inline: var(--container-px);
+    }
+
+    /* Section spacing */
+    .section-padding {
+        padding-block: clamp(4rem, 10vw, 8rem);
+    }
+
+    /* Gold gradient text — for hero headlines and accents */
+    .text-gold-gradient {
+        background: linear-gradient(135deg, #B8860B 0%, #E8C44A 45%, #C9972C 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        color: transparent;
+    }
+
+    /* Gold metallic shine — animated shimmer variant */
+    .text-gold-shine {
+        background: linear-gradient(
+        105deg,
+        #9A6F0A 0%,
+        #E8C44A 40%,
+        #C9972C 50%,
+        #E8C44A 60%,
+        #9A6F0A 100%
+        );
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        color: transparent;
+        animation: shimmer 3s linear infinite;
+    }
+
+    /* Gold decorative divider — horizontal rule variant */
+    .gold-divider {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    .gold-divider::before,
+    .gold-divider::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, var(--color-gold), transparent);
+    }
+
+    /* Gold line accent — short decorative line above headings */
+    .gold-line {
+        display: block;
+        width: 40px;
+        height: 2px;
+        background: var(--color-gold);
+        margin-bottom: 1rem;
+    }
+
+    /* Card surface — dark elevated card */
+    .card-surface {
+        background: #111111;
+        border: 1px solid var(--color-border);
+        border-radius: 8px;
+        transition: border-color 250ms ease, box-shadow 250ms ease;
+    }
+    .card-surface:hover {
+        border-color: var(--color-border-hover);
+        box-shadow: 0 0 24px rgba(201, 151, 44, 0.08);
+    }
+
+    /* Label — all-caps tracking for section labels */
+    .label-tag {
+        font-family: var(--font-body);
+        font-size: 0.75rem;
+        font-weight: 500;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--color-gold);
+    }
+
+    /* Subtle grid background overlay */
+    .bg-grid {
+        background-image:
+        linear-gradient(rgba(201, 151, 44, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(201, 151, 44, 0.04) 1px, transparent 1px);
+        background-size: 60px 60px;
+    }
+
+    /* Hero radial glow */
+    .bg-hero-glow {
+        background: radial-gradient(
+        ellipse 80% 50% at 50% -10%,
+        rgba(201, 151, 44, 0.1) 0%,
+        transparent 70%
+        );
+    }
+    }
+
+    /* ─── Reduced Motion ───────────────────────────────────────────────────── */
+    @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+    }
+
+    /* ─── Form Input Focus ──────────────────────────────────────────────────── */
+    input:focus-visible,
+    textarea:focus-visible,
+    select:focus-visible {
+    outline: none;
+    border-color: rgba(201, 151, 44, 0.55) !important;
+    box-shadow: 0 0 0 2px rgba(201, 151, 44, 0.15);
+    }
+
+    /* ─── Utility Layer ─────────────────────────────────────────────────────── */
+    @layer utilities {
+    /* Opacity-delayed animation utilities */
+    .animate-delay-100 { animation-delay: 100ms; }
+    .animate-delay-200 { animation-delay: 200ms; }
+    .animate-delay-300 { animation-delay: 300ms; }
+    .animate-delay-400 { animation-delay: 400ms; }
+    .animate-delay-500 { animation-delay: 500ms; }
+
+    /* Initially hidden — used with fade-up animations */
+    .opacity-start { opacity: 0; }
+
+    /* Balanced text wrap — prevents orphans in headings */
+    .text-balance { text-wrap: balance; }
+    .text-pretty  { text-wrap: pretty; }
+
+    /* GPU compositing hint — use sparingly on animated elements */
+    .will-transform { will-change: transform; }
+    }
