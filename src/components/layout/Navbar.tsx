@@ -3,6 +3,7 @@
     import { useState, useEffect } from 'react'
     import { TransitionLink as Link } from '@/components/layout/PageTransition'
     import { motion, AnimatePresence } from 'framer-motion'
+    import Logo from '@/components/ui/Logo'
 
     const navLinks = [
     { label: 'O nama',   href: '/about' },
@@ -57,12 +58,7 @@
                 whileHover={{ scale: 1.03 }}
                 transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
                 >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                    src="/apex-logo.png"
-                    alt="APEX Energy"
-                    style={{ height: '68px', width: 'auto', objectFit: 'contain', display: 'block' }}
-                />
+                <Logo variant="navbar" height={68} />
                 </motion.div>
             </Link>
 
