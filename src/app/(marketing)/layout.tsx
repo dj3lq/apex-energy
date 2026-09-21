@@ -2,8 +2,7 @@
     import Footer from '@/components/layout/Footer'
 
     /**
-     * Shared layout for all (marketing) pages.
-     * Wraps content with Navbar + Footer.
+     * Shared layout for all (marketing) pages — wraps content with Navbar + Footer.
      */
     export default function MarketingLayout({
     children,

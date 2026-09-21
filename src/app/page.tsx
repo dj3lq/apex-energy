@@ -7,7 +7,6 @@ import HeroSection     from '@/components/sections/HeroSection'
 import AboutSection    from '@/components/sections/AboutSection'
 import ServicesSection from '@/components/sections/ServicesSection'
 import ProcessSection  from '@/components/sections/ProcessSection'
-import TeamSection     from '@/components/sections/TeamSection'
 import ContactSection  from '@/components/sections/ContactSection'
 
 export const metadata: Metadata = {
@@ -35,8 +34,6 @@ export default function HomePage() {
         <ServicesSection />
         <LogoDivider />
         <ProcessSection />
-        <LogoDivider />
-        <TeamSection />
         <LogoDivider />
         <ContactSection />
       </main>

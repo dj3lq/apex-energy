@@ -1,178 +1,122 @@
-import type { Metadata, Viewport } from 'next'
-import { ClerkProvider } from '@clerk/nextjs'
-import { TransitionProvider } from '@/components/layout/PageTransition'
-import '../styles/globals.css'
+    import type { Metadata, Viewport } from 'next'
+    import { ClerkProvider } from '@clerk/nextjs'
+    import { TransitionProvider } from '@/components/layout/PageTransition'
+    import CookieConsent from '@/components/layout/CookieConsent'
+    import StructuredData from '@/components/seo/StructuredData'
+    import { SITE_URL, COMPANY } from '@/lib/site'
+    import '../styles/globals.css'
 
-/**
- * Apex Energy — Root Layout
- *
- * Responsibilities:
- * - Provides ClerkProvider for authentication context
- * - Sets global SEO metadata and Open Graph tags
- * - Loads brand fonts via next/font (Google Fonts subset)
- * - Applies base HTML attributes for accessibility and language
- *
- * Security notes:
- * - Content Security Policy headers are set in next.config.ts (not here)
- * - ClerkProvider handles session management securely via Clerk SDK
- * - No sensitive data is rendered in this server component
- */
+    export const viewport: Viewport = {
+    width: 'device-width',
+    initialScale: 1,
+    themeColor: '#0A0A0A',
+    }
 
-// ─── Metadata ──────────────────────────────────────────────────────────────
-export const metadata: Metadata = {
-  // Base URL for resolving relative Open Graph image paths
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL ?? 'https://apexenergy.rs'
-  ),
+    export const metadata: Metadata = {
+    // Makes relative URLs in metadata absolute — required for OG images to
+    // resolve when scrapers fetch the page.
+    metadataBase: new URL(SITE_URL),
 
-  title: {
-    default:  'Apex Energy — Energy Solutions for Serbia and the Region',
-    template: '%s | Apex Energy',
-  },
-
-  description:
-    'Apex Energy is a Serbian energy company specialising in renewable energy, ' +
-    'smart energy systems, infrastructure engineering, and sustainable solutions.',
-
-  keywords: [
-    'energy company Serbia',
-    'renewable energy Serbia',
-    'solar energy',
-    'wind energy',
-    'energy storage',
-    'smart energy systems',
-    'energy infrastructure',
-    'Apex Energy',
-  ],
-
-  authors: [{ name: 'Apex Energy DOO', url: 'https://apexenergy.rs' }],
-  creator: 'Apex Energy DOO',
-  publisher: 'Apex Energy DOO',
-
-  // Open Graph — controls appearance when shared on LinkedIn, social media
-  openGraph: {
-    type:        'website',
-    locale:      'sr_RS',
-    alternateLocale: ['en_US'],
-    url:         'https://apexenergy.rs',
-    siteName:    'Apex Energy',
-    title:       'Apex Energy — Energy Solutions for Serbia and the Region',
-    description:
-      'Apex Energy is a Serbian energy company specialising in renewable energy, ' +
-      'smart energy systems, infrastructure engineering, and sustainable solutions.',
-    images: [
-      {
-        url:    '/og-image.jpg', // Place a 1200x630 image in /public/
-        width:  1200,
-        height: 630,
-        alt:    'Apex Energy — Energy Solutions',
-      },
-    ],
-  },
-
-  // Twitter / X card
-  twitter: {
-    card:        'summary_large_image',
-    title:       'Apex Energy — Energy Solutions for Serbia and the Region',
-    description:
-      'Apex Energy: renewable energy, smart systems, infrastructure engineering.',
-    images:      ['/og-image.jpg'],
-  },
-
-  // Robots — allow indexing in production, block in preview/staging
-  robots: {
-    index:  process.env.NEXT_PUBLIC_ENV === 'production',
-    follow: process.env.NEXT_PUBLIC_ENV === 'production',
-    googleBot: {
-      index:  process.env.NEXT_PUBLIC_ENV === 'production',
-      follow: process.env.NEXT_PUBLIC_ENV === 'production',
+    title: {
+        default:  'APEX Energy — Inženjersko savetovanje i energetska rešenja | Novi Sad',
+        // Child pages set only their own title; this appends the brand.
+        template: '%s | APEX Energy',
     },
-  },
 
-  // Canonical and alternate language URLs
-  alternates: {
-    canonical: 'https://apexenergy.rs',
-    languages: {
-      'sr-RS': 'https://apexenergy.rs',
-      'en-US': 'https://apexenergy.rs/en',
-    },
-  },
+    description:
+        'APEX energy DOO — inženjersko savetovanje, upravljanje projektima, energetska ' +
+        'efikasnost, BIM digitalizacija i ISO standardi. Novi Sad, Srbija.',
 
-  // Favicon and icons — place files in /public/
-  icons: {
-    icon:             '/favicon.ico',
-    shortcut:         '/favicon-16x16.png',
-    apple:            '/apple-touch-icon.png',
-    other: [
-      { rel: 'icon', type: 'image/png', sizes: '32x32', url: '/favicon-32x32.png' },
-      { rel: 'icon', type: 'image/png', sizes: '16x16', url: '/favicon-16x16.png' },
+    keywords: [
+        'inženjersko savetovanje',
+        'energetska efikasnost',
+        'upravljanje projektima',
+        'BIM',
+        'ISO 9001',
+        'bezbednost na radu',
+        'Novi Sad',
+        'Srbija',
     ],
-  },
 
-  // PWA manifest
-  manifest: '/site.webmanifest',
+    authors:   [{ name: COMPANY.legalName }],
+    creator:   COMPANY.legalName,
+    publisher: COMPANY.legalName,
 
-  // Verification — add once domains are confirmed
-  // verification: {
-  //   google: 'YOUR_GOOGLE_SEARCH_CONSOLE_TOKEN',
-  // },
-}
+    // Canonical URL — stops the same content ranking from several paths.
+    alternates: {
+        canonical: '/',
+    },
 
-// ─── Viewport ──────────────────────────────────────────────────────────────
-export const viewport: Viewport = {
-  width:        'device-width',
-  initialScale: 1,
-  maximumScale: 5, // Allow zoom for accessibility — never set to 1
-  themeColor:   '#0A0A0A',
-}
+    openGraph: {
+        type: 'website',
+        locale: 'sr_RS',
+        url: SITE_URL,
+        siteName: COMPANY.name,
+        title: 'APEX Energy — Inženjersko savetovanje i energetska rešenja',
+        description:
+        'Prvoklasno inženjersko savetovanje i tehnička podrška. ' +
+        'Jasni rokovi, merljivi rezultati, iskusan tim iz Novog Sada.',
+        images: [
+        {
+            url: '/og-image.png',
+            width: 1200,
+            height: 630,
+            alt: 'APEX Energy — inženjersko savetovanje, Novi Sad',
+        },
+        ],
+    },
 
-// ─── Root Layout ───────────────────────────────────────────────────────────
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
-  return (
-    /*
-     * ClerkProvider must wrap the entire app for auth context.
-     * It does not add any visible UI — it only provides React context.
-     *
-     * Security: Clerk handles CSRF protection, session management,
-     * and token rotation internally. Do not implement these manually.
-     */
-    <ClerkProvider>
-      <html
-        lang="sr"           // Serbian — update to "en" for English-primary
-        dir="ltr"
-        suppressHydrationWarning  // Required for dark mode class toggling
-      >
-        <head>
-          {/*
-           * Preconnect to Google Fonts for performance.
-           * Fonts are loaded via globals.css @import.
-           * In production, consider self-hosting fonts for privacy.
-           */}
-          <link rel="preconnect" href="https://fonts.googleapis.com" />
-          <link
-            rel="preconnect"
-            href="https://fonts.gstatic.com"
-            crossOrigin="anonymous"
-          />
-        </head>
+    twitter: {
+        card: 'summary_large_image',
+        title: 'APEX Energy — Inženjersko savetovanje',
+        description: 'Inženjersko savetovanje i energetska rešenja. Novi Sad, Srbija.',
+        images: ['/og-image.png'],
+    },
 
-        <body className="bg-black-950 text-ivory-100 font-body antialiased">
-          {/*
-           * Main content wrapper.
-           * min-h-screen ensures footer stays at bottom on short pages.
-           * flex + flex-col enables sticky footer pattern.
-           */}
-          <TransitionProvider>
-            <div className="flex min-h-screen flex-col">
-              {children}
-            </div>
-          </TransitionProvider>
-        </body>
-      </html>
-    </ClerkProvider>
-  )
-}
+    robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+        index: true,
+        follow: true,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+        },
+    },
+
+    icons: {
+        icon: [
+        { url: '/favicon.ico' },
+        { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+        { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+        ],
+        apple: '/apple-touch-icon.png',
+    },
+
+    manifest: '/site.webmanifest',
+
+    // Uncomment once you have the token from Google Search Console.
+    // verification: { google: 'PASTE_TOKEN_HERE' },
+    }
+
+    export default function RootLayout({
+    children,
+    }: {
+    children: React.ReactNode
+    }) {
+    return (
+        <ClerkProvider>
+        <html lang="sr-RS">
+            <body>
+            <StructuredData />
+            <TransitionProvider>
+                <div className="flex min-h-screen flex-col">
+                {children}
+                </div>
+                <CookieConsent />
+            </TransitionProvider>
+            </body>
+        </html>
+        </ClerkProvider>
+    )
+    }

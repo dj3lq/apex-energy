@@ -10,7 +10,6 @@
     { label: 'O nama',   href: '/about' },
     { label: 'Usluge',  href: '/services' },
     { label: 'Proces',  href: '/#process' },
-    { label: 'Tim',     href: '/#team' },
     { label: 'Kontakt', href: '/contact' },
     ]
 
