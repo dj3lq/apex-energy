@@ -25,7 +25,6 @@
      */
 
     // ── Lazy-initialised clients ─────────────────────────────────────────────────
-    // Initialised outside the handler so they are reused across warm invocations.
     // Validated at runtime so missing env vars fail loudly.
 
     function getResend(): Resend {
@@ -50,7 +49,6 @@
 
     // ── Helper: get client IP ─────────────────────────────────────────────────────
     function getClientIp(req: NextRequest): string {
-    // Cloudflare sets CF-Connecting-IP; fall back to X-Forwarded-For, then unknown
     return (
         req.headers.get('cf-connecting-ip') ??
         req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
@@ -90,8 +88,8 @@
         return errorResponse('INVALID_JSON', 'Nevažeći format zahteva.', 400)
     }
 
-    // 2. Honeypot check — bots fill in the hidden `website` field
-    //    Check before rate limiting to avoid wasting Upstash quota on bots
+    // 2. Honeypot check — bots fill in the hidden `website` field.
+    //    Checked before rate limiting to avoid spending Upstash quota on bots.
     if (
         body !== null &&
         typeof body === 'object' &&
@@ -99,23 +97,25 @@
         (body as Record<string, unknown>).website !== '' &&
         (body as Record<string, unknown>).website !== undefined
     ) {
-        // Return 200 to fool the bot — don't reveal the honeypot
+        // Logged so a false positive (e.g. browser autofill hitting the field)
+        // is visible in the server logs instead of failing silently.
+        console.warn('[contact] Honeypot triggered — submission discarded')
+        // Return 200 so a bot can't tell it was caught.
         return NextResponse.json({ success: true } satisfies ApiResponse, { status: 200 })
     }
 
     // 3. Rate limiting — keyed on IP
-    let ratelimit: Ratelimit
+    let ratelimit: Ratelimit | null = null
     try {
         ratelimit = getRatelimit()
     } catch {
-        // If Upstash isn't configured (e.g. local dev without Redis),
-        // log a warning and continue — don't block legitimate submissions
-        console.warn('[contact] Rate limiting unavailable — UPSTASH env vars not set')
-        ratelimit = null as unknown as Ratelimit
+        // Without Upstash (e.g. local dev) keep accepting submissions rather
+        // than blocking legitimate users.
+        console.warn('[contact] Honeypot triggered — value:', JSON.stringify((body as Record<string, unknown>).website))
     }
 
     if (ratelimit) {
-        const ip     = getClientIp(req)
+        const ip = getClientIp(req)
         const { success, limit, remaining, reset } = await ratelimit.limit(ip)
 
         if (!success) {
@@ -131,10 +131,10 @@
             {
             status:  429,
             headers: {
-                'Retry-After':          String(retryAfter),
-                'X-RateLimit-Limit':    String(limit),
+                'Retry-After':           String(retryAfter),
+                'X-RateLimit-Limit':     String(limit),
                 'X-RateLimit-Remaining': String(remaining),
-                'X-RateLimit-Reset':    String(reset),
+                'X-RateLimit-Reset':     String(reset),
             },
             },
         )
@@ -151,7 +151,7 @@
             error: {
             code:    'VALIDATION_ERROR',
             message: 'Proverite unesene podatke i pokušajte ponovo.',
-            // Field-level errors are safe to return — they contain no internal info
+            // Field-level errors contain no internal info, so they're safe to return.
             details: errors,
             },
         } satisfies ApiResponse,
@@ -179,9 +179,9 @@
     try {
         const resend = getResend()
         const { error } = await resend.emails.send({
-        from:     `APEX Energy <${fromEmail}>`,
-        to:       [toEmail],
-        replyTo:  data.email,
+        from:    `APEX Energy <${fromEmail}>`,
+        to:      [toEmail],
+        replyTo: data.email,
         subject,
         html,
         text,
@@ -207,10 +207,7 @@
     }
 
     // 6. Success
-    return NextResponse.json(
-        { success: true } satisfies ApiResponse,
-        { status: 200 },
-    )
+    return NextResponse.json({ success: true } satisfies ApiResponse, { status: 200 })
     }
 
     // Reject all other HTTP methods
