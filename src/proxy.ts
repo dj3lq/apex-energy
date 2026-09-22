@@ -91,6 +91,6 @@
         * - favicon.ico   (favicon)
         * - public files  (anything with a file extension in /public)
         */
-        '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|pdf|txt|xml|json)$).*)',
+        '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|pdf|txt|xml|json|html|webmanifest)$).*)',
     ],
     }
